@@ -1,7 +1,7 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <input type="file" @change="onChange">
+    <img alt="Vue logo" :src="mysrc">
   </div>
 </template>
 
@@ -11,8 +11,19 @@ import HelloWorld from '@/components/HelloWorld.vue'
 
 export default {
   name: 'home',
+  
   components: {
     HelloWorld
+  },
+  data() {
+    return {
+      mysrc: ''
+    }
+  },
+  methods: {
+    onChange(e) {
+      this.mysrc = window.URL.createObjectURL(e.target.files[0])
+    }
   }
 }
 </script>
