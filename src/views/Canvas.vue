@@ -9,16 +9,26 @@
     </div>
     <div class="center">
       <p>操作视口</p>
-      <div class="myedit" ref="myedit" @mousedown.prevent="onMousedown" @mousemove="onMousemove" @contextmenu.prevent="">
+      <div class="myedit" ref="myedit"  
+      @mousedown.prevent="" 
+      @mousemove.prevent="" 
+      @mouseup.prevent=""
+      @contextmenu.prevent="">
         <!-- <img src="@/assets/jia.svg" alt=""> -->
-        <img :src="mysrc" />
-        <span
+        <img :src="mysrc"  @mousedown.prevent="onMousedown" @mousemove="onMousemove" />
+        <div
           class="myedit-span"
           v-for="(item, index) in mydata"
           :key="index"
           :style="getSpanStyle(item)"
-          @contextmenu.prevent="onContextmenu(item, $event)"
-        ></span>
+          @contextmenu.prevent="onContextmenu(item, $event)">
+          <div class="br" 
+          @mousedown.prevent="onMousedownbr(item,$event)"
+          @mousemove="onMousemovebr(item,$event)"
+          @mouseup="onMouseupbr(item,$event)"
+          ></div>
+          <!-- <div class="divcenter"></div> -->
+        </div>
         <!-- <div id="canvas" style="width:100%;height:100%" class="mycanvas"></div> -->
       </div>
     </div>
@@ -43,6 +53,7 @@
 </template>
 
 <script>
+
 import jiaIcon from "./jia.svg";
 export default {
   data() {
@@ -54,11 +65,18 @@ export default {
   },
   mounted() {
     document.addEventListener('mouseup', this.onMouseup)
+    this.getData()
   },
   beforeDestroy() {
     document.removeEventListener('mouseup', this.onMouseup)
   },
   methods: {
+    getData(){
+      let url='/index'
+      this.axios(url,{params:{status:1}}).then(data=>{
+        console.log(data)
+      }).catch(err => this.$Message.error(err.message))
+    },
     getXY(e) {
       let rect = this.$refs.myedit.getBoundingClientRect()
       return {
@@ -75,7 +93,40 @@ export default {
     selectFile() {
       this.$refs.file.click();
     },
+    // 矩形右下角拖动事件1
+    onMousedownbr(item,e){
+      this.canmove=true
+      console.log(1)
+      console.log(this.getXY(e))
+      this.startPosbr=this.getXY(e)
+      console.log(2)
+      console.log(this.startPosbr)
+      e.target.addEventListener('mousemove',this.onMousemovebr)
+      e.target.addEventListener('mouseup',this.onMouseupbr)
+    },
+    onMousemovebr(item,e){
+      if(this.canmove){
+      let { x, y } = this.getXY(e)
+      console.log(3)
+      console.log(this.getXY(e))
+      item.w=item.w+(x-this.startPosbr.x)
+      item.h=item.h+(y-this.startPosbr.y)
+      console.log(4)
+      console.log(item.w)
+      // Math.sqrt(9)
+      // 9**.5
+      }
+    },
+    onMouseupbr(item,e){
+      this.canmove=false
+      this.startPos =this.startPosbr= null;
+      e.target.removeEventListener('mousemove',this.onMousemovebr)
+      e.target.removeEventListener('mouseup',this.onMouseupbr)
+    },
+    // 矩形右下角拖动事件2
     onMousedown(e) {
+      e.target.addEventListener('mousemove',this.onMousemove)
+      e.target.addEventListener('mouseup',this.onMouseup)
       this.mymenu.current = null
       let { x, y } = this.getXY(e)
       this.currentItem = { x, y, w: 0, h: 0, now: Date.now() }
@@ -89,8 +140,10 @@ export default {
       this.currentItem.h = Math.abs(y - this.startPos.y)
     },
     onMouseup(e) {
-      this.currentItem = this.startPos = null;
-      this.mydata = this.mydata.filter(_ => _.w > 10 && _.h > 10)
+      this.currentItem = this.startPos =this.startPosbr= null;
+      // this.mydata = this.mydata.filter(_ => _.w > 10 && _.h > 10)
+      e.target.removeEventListener('mousemove',this.onMousemove)
+      e.target.removeEventListener('mouseup',this.onMouseup)
     },
     onContextmenu(item, e) {
       this.mymenu = {
@@ -176,10 +229,26 @@ body {
       .myedit-span {
         position: absolute;
         border: 1px dashed #fff;
-        background: url("./jia.svg") no-repeat center center;
+        // background: url("./jia.svg") no-repeat center center;
         background-size: contain;
       }
-
+      .br,.divcenter{
+        width: 10px;
+        height: 10px;
+        position: absolute;
+        border: 1px solid #f00;
+        background: #fff;
+        border-radius: 50%;
+        bottom:-5px;
+        right:-5px;
+        cursor:nwse-resize;
+      }
+      .divcenter{
+        top:50%;
+        left:50%;
+        transform:translate(-5px ,-5px);
+        cursor:move;
+      }
       .mycanvas {
         border: 1px solid pink;
         position: absolute;
