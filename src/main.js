@@ -5,6 +5,8 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import axios from './axios'
+import VueDragResize from 'vue-drag-resize' 
+Vue.component('vue-drag-resize', VueDragResize) 
 Vue.prototype.axios = axios
 Vue.use(VueUI)
 

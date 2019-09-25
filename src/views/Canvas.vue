@@ -1,5 +1,6 @@
 <template>
   <div class="mycanvas-container">
+    <vue-drag-resize :isActive = 'true'/>>
     <div class="left">
       <p>展示视口</p>
       <div class="myshow">
@@ -27,7 +28,6 @@
           @mousemove="onMousemovebr(item,$event)"
           @mouseup="onMouseupbr(item,$event)"
           ></div>
-          <!-- <div class="divcenter"></div> -->
         </div>
         <!-- <div id="canvas" style="width:100%;height:100%" class="mycanvas"></div> -->
       </div>
@@ -95,22 +95,37 @@ export default {
     },
     // 矩形右下角拖动事件1
     onMousedownbr(item,e){
+      e.target.removeEventListener('mousemove',this.onMousemove)
+      e.target.removeEventListener('mouseup',this.onMouseup)
       this.canmove=true
       console.log(1)
+      console.log(item)
       console.log(this.getXY(e))
       this.startPosbr=this.getXY(e)
       console.log(2)
       console.log(this.startPosbr)
-      e.target.addEventListener('mousemove',this.onMousemovebr)
-      e.target.addEventListener('mouseup',this.onMouseupbr)
+      e.target.addEventListener('mousemove',this.onMousemovebr(item,$event))
+      e.target.addEventListener('mouseup',this.onMouseupbr(item,$event))
     },
     onMousemovebr(item,e){
       if(this.canmove){
       let { x, y } = this.getXY(e)
       console.log(3)
       console.log(this.getXY(e))
-      item.w=item.w+(x-this.startPosbr.x)
-      item.h=item.h+(y-this.startPosbr.y)
+      let myw=item.w;
+      let myh=item.h;
+      let myx=item.x;
+      let myy=item.y;
+      let myn=item.now;
+      item={
+        w:x-this.startPosbr.x,
+        h:y-this.startPosbr.y,
+        x:myx,
+        y:myy,
+        now:myn
+      }
+      // item.w=item.w+(x-this.startPosbr.x)
+      // item.h=item.h+(y-this.startPosbr.y)
       console.log(4)
       console.log(item.w)
       // Math.sqrt(9)
@@ -118,10 +133,10 @@ export default {
       }
     },
     onMouseupbr(item,e){
-      this.canmove=false
-      this.startPos =this.startPosbr= null;
       e.target.removeEventListener('mousemove',this.onMousemovebr)
       e.target.removeEventListener('mouseup',this.onMouseupbr)
+      this.canmove=false
+      this.startPos =this.startPosbr= null;
     },
     // 矩形右下角拖动事件2
     onMousedown(e) {
