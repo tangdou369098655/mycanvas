@@ -6,6 +6,7 @@ import Canvas from './views/Canvas.vue'
 Vue.use(Router)
 
 export default new Router({
+  // mode: 'history',  //去掉这句话 就是哈希模式啦！
   routes: [
     {
       path: '/',
