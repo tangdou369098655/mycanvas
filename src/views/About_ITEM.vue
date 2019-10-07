@@ -12,9 +12,9 @@ export default {
     return {
       dataAll: {
         // 用户名称
-        name: "小王",
+        name: "哈哈",
         //用户编号
-        Numbering: "100",
+        Numbering: "23232",
         // 左右数量
         LeftQuantity: "100",
         RightQuantity: "100",
@@ -28,6 +28,15 @@ export default {
             children: [
               {
                 name: "children1"
+              },
+              {
+                name: "children2"
+              },
+              {
+                name: "children3"
+              },
+              {
+                name: "children4"
               }
             ]
           },
